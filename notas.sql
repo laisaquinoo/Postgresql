@@ -71,3 +71,48 @@ insert into notas values('LPBD' ,'4',7,9,10);
 
 select * from notas
 select * from alunos
+
+UPDATE notas
+SET n3 = '9' 
+WHERE alunoRA = '3';
+
+DELETE FROM notas
+WHERE alunoRA = '1';
+
+select*from notas_log
+select*from notas
+
+--Implemente uma trigger para exibir msg caso tenham notas negativas
+CREATE FUNCTION log_msg () returns trigger as 
+$BODY$
+    BEGIN
+        IF NEW.n1 < 0 THEN
+            RAISE EXCEPTION 'não pode ter nota negativa';
+        END IF;
+
+        IF NEW.n2 < 0 THEN
+            RAISE EXCEPTION 'não pode ter nota negativa';
+        END IF;
+        
+        IF NEW.n3 < 0 THEN
+            RAISE EXCEPTION 'não pode ter nota negativa';
+        END IF;
+
+        RETURN NEW;
+    END;
+    $BODY$
+ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_msg
+    BEFORE INSERT OR UPDATE ON NOTAS
+    FOR EACH ROW EXECUTE PROCEDURE log_msg();
+
+	insert into ALUNOs values('Gabrielly','5','F','6/11/1983','Alameda Inhambu 993','Barueri','SP','06428-230');
+	insert into ALUNOs values('Diego','6','M','26/9/1990','Avenida Centenário 418','Maringá','PR','87050-040');
+
+	insert into notas values('LPBD' ,'5',3,-7,7); 
+	insert into notas values('LPBD' ,'6',-10,7,-2);
+
+select*from notas_log
+select*from notas
+
